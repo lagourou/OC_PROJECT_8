@@ -1,0 +1,12 @@
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/TourguideApplication.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/configuration/ExecutorConfig.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/configuration/TourGuideModule.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/controller/TourGuideController.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/dto/NearbyAttractionDTO.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/helper/InternalTestHelper.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/service/RewardsService.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/service/TourGuideService.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/tracker/Tracker.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/user/User.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/user/UserPreferences.java
+/home/runner/work/OC_PROJECT_8/OC_PROJECT_8/TourGuide/src/main/java/com/openclassrooms/tourguide/user/UserReward.java

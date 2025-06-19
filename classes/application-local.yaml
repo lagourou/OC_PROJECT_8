@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: tourguide
+  logging:
+    level:
+      root: DEBUG
+      com.openclassrooms.tourguide: DEBUG
+      com.openclassrooms.tourguide.unitaire: DEBUG
+      com.openclassrooms.tourguide.unitaire.TestPerformance: DEBUG
+
+tourguide:
+  startTracker: true
