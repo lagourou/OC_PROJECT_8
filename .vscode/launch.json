@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-TourguideApplication<tourguide>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.openclassrooms.tourguide.TourguideApplication",
+      "projectName": "tourguide",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
