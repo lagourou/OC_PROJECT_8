@@ -22,43 +22,45 @@ jobs:
           distribution: "temurin"
 
       - name: Install private JAR dependencies
+        working-directory: TourGuide
         run: |
-          mvn install:install-file -Dfile=./TourGuide/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./TourGuide/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
 
       - name: Build and test with Maven
+        working-directory: TourGuide
         run: mvn clean verify jacoco:report surefire-report:report-only javadoc:javadoc
 
       - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: target/site/jacoco/
+          path: TourGuide/target/site/jacoco/
 
       - name: Upload Javadoc
         uses: actions/upload-artifact@v4
         with:
           name: javadoc
-          path: target/site/apidocs/
+          path: TourGuide/target/site/apidocs/
 
       - name: Upload Surefire Report
         uses: actions/upload-artifact@v4
         with:
           name: surefire-report
-          path: target/reports/
+          path: TourGuide/target/reports/
 
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: application-jar
-          path: target/*.jar
+          path: TourGuide/target/*.jar
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target
+          publish_dir: TourGuide/target
 
   docker-build:
     runs-on: ubuntu-latest
@@ -75,12 +77,14 @@ jobs:
           distribution: "temurin"
 
       - name: Install private JAR dependencies
+        working-directory: TourGuide
         run: |
-          mvn install:install-file -Dfile=./TourGuide/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./TourGuide/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
+          mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
 
       - name: Build application with Maven
+        working-directory: TourGuide
         run: mvn clean install
 
       - name: Extract short commit SHA
@@ -88,6 +92,7 @@ jobs:
         run: echo "short_sha=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build Docker image with tags
+        working-directory: TourGuide
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/p8:latest -t ${{ secrets.DOCKER_USERNAME }}/p8:${{ env.short_sha }} .
 
