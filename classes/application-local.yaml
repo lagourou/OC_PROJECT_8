@@ -3,10 +3,10 @@ spring:
     name: tourguide
   logging:
     level:
-      root: DEBUG
-      com.openclassrooms.tourguide: DEBUG
-      com.openclassrooms.tourguide.unitaire: DEBUG
-      com.openclassrooms.tourguide.unitaire.TestPerformance: DEBUG
+      root: INFO
+      com.openclassrooms.tourguide: INFO
+      com.openclassrooms.tourguide.service.RewardsService: ERROR
+      com.openclassrooms.tourguide.performance: INFO
 
 tourguide:
   startTracker: true
