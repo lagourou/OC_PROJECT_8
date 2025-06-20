@@ -1,4 +1,5 @@
-com\openclassrooms\tourguide\unitaire\TestPerformance.class
+com\openclassrooms\tourguide\performance\TestGetRewardsPerformance.class
+com\openclassrooms\tourguide\performance\TestTrackLocationPerformance.class
 com\openclassrooms\tourguide\TourguideApplicationTests.class
-com\openclassrooms\tourguide\unitaire\TestRewardsService.class
-com\openclassrooms\tourguide\unitaire\TestTourGuideService.class
+com\openclassrooms\tourguide\service\TestRewardsService.class
+com\openclassrooms\tourguide\service\TestTourGuideService.class

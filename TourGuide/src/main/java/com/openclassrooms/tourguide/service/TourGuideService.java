@@ -44,8 +44,7 @@ public class TourGuideService {
 	private final RewardsService rewardsService;
 	private final TripPricer tripPricer = new TripPricer();
 	public final Tracker tracker;
-
-	private boolean startTracker;
+	private final boolean startTracker;
 
 	private final Cache<UUID, VisitedLocation> locationCache = Caffeine.newBuilder()
 			.expireAfterWrite(5, TimeUnit.MINUTES)
@@ -100,10 +99,20 @@ public class TourGuideService {
 			VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());
 
 			user.addToVisitedLocations(visitedLocation);
-			rewardsService.calculateRewardsAsync(user);
+			List<Attraction> attractions = gpsUtil.getAttractions();
+			rewardsService.calculateRewardsAsync(user, attractions);
 			locationCache.put(user.getUserId(), visitedLocation);
 			return visitedLocation;
 		}, executor);
+	}
+
+	public void trackAllUsersLocations(List<User> users) {
+		List<CompletableFuture<Void>> futures = users.stream()
+				.map(user -> trackUserLocation(user).thenAccept(location -> {
+				}))
+				.toList();
+
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 	}
 
 	public List<Attraction> getNearByAttractions(VisitedLocation visitedLocation) {

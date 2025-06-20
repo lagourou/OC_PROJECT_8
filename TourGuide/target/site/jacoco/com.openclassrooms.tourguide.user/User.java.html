@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tourguide</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.tourguide.user</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.openclassrooms.tourguide.user;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import gpsUtil.location.VisitedLocation;
+import tripPricer.Provider;
+
+public class User {
+	private final UUID userId;
+	private final String userName;
+	private String phoneNumber;
+	private String emailAddress;
+	private Date latestLocationTimestamp;
+<span class="fc" id="L19">	private List&lt;VisitedLocation&gt; visitedLocations = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L20">	private final List&lt;UserReward&gt; userRewards = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">	private UserPreferences userPreferences = new UserPreferences();</span>
+<span class="fc" id="L22">	private List&lt;Provider&gt; tripDeals = new CopyOnWriteArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L24">	public User(UUID userId, String userName, String phoneNumber, String emailAddress) {</span>
+<span class="fc" id="L25">		this.userId = userId;</span>
+<span class="fc" id="L26">		this.userName = userName;</span>
+<span class="fc" id="L27">		this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L28">		this.emailAddress = emailAddress;</span>
+<span class="fc" id="L29">	}</span>
+
+	public UUID getUserId() {
+<span class="fc" id="L32">		return userId;</span>
+	}
+
+	public String getUserName() {
+<span class="fc" id="L36">		return userName;</span>
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+<span class="nc" id="L40">		this.phoneNumber = phoneNumber;</span>
+<span class="nc" id="L41">	}</span>
+
+	public String getPhoneNumber() {
+<span class="nc" id="L44">		return phoneNumber;</span>
+	}
+
+	public void setEmailAddress(String emailAddress) {
+<span class="nc" id="L48">		this.emailAddress = emailAddress;</span>
+<span class="nc" id="L49">	}</span>
+
+	public String getEmailAddress() {
+<span class="nc" id="L52">		return emailAddress;</span>
+	}
+
+	public void setLatestLocationTimestamp(Date latestLocationTimestamp) {
+<span class="nc" id="L56">		this.latestLocationTimestamp = latestLocationTimestamp;</span>
+<span class="nc" id="L57">	}</span>
+
+	public Date getLatestLocationTimestamp() {
+<span class="nc" id="L60">		return latestLocationTimestamp;</span>
+	}
+
+	public void addToVisitedLocations(VisitedLocation visitedLocation) {
+<span class="fc" id="L64">		visitedLocations.add(visitedLocation);</span>
+<span class="fc" id="L65">	}</span>
+
+	public List&lt;VisitedLocation&gt; getVisitedLocations() {
+<span class="fc" id="L68">		return visitedLocations;</span>
+	}
+
+	public VisitedLocation getLastVisitedLocations() {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">		return visitedLocations.isEmpty() ? null : visitedLocations.get(visitedLocations.size() - 1);</span>
+	}
+
+	public void clearVisitedLocations() {
+<span class="nc" id="L76">		visitedLocations.clear();</span>
+<span class="nc" id="L77">		visitedLocations = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="nc" id="L78">	}</span>
+
+<span class="fc" id="L80">	private final Set&lt;String&gt; rewardedAttractions = ConcurrentHashMap.newKeySet();</span>
+
+	public void addUserReward(UserReward userReward) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (rewardedAttractions.add(userReward.attraction.attractionName)) {</span>
+<span class="fc" id="L84">			userRewards.add(userReward);</span>
+		}
+<span class="fc" id="L86">	}</span>
+
+	public List&lt;UserReward&gt; getUserRewards() {
+<span class="fc" id="L89">		return userRewards;</span>
+	}
+
+	public UserPreferences getUserPreferences() {
+<span class="fc" id="L93">		return userPreferences;</span>
+	}
+
+	public void setUserPreferences(UserPreferences userPreferences) {
+<span class="nc" id="L97">		this.userPreferences = userPreferences;</span>
+<span class="nc" id="L98">	}</span>
+
+	public VisitedLocation getLastVisitedLocation() {
+<span class="fc" id="L101">		return visitedLocations.get(visitedLocations.size() - 1);</span>
+	}
+
+	public void setTripDeals(List&lt;Provider&gt; tripDeals) {
+<span class="fc" id="L105">		this.tripDeals = tripDeals;</span>
+<span class="fc" id="L106">	}</span>
+
+	public List&lt;Provider&gt; getTripDeals() {
+<span class="nc" id="L109">		return tripDeals;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

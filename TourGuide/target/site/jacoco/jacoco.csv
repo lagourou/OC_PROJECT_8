@@ -1,0 +1,13 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+tourguide,com.openclassrooms.tourguide.helper,InternalTestHelper,3,8,0,0,1,4,1,3,1,3
+tourguide,com.openclassrooms.tourguide.service,TourGuideService,60,300,7,11,13,72,11,21,5,18
+tourguide,com.openclassrooms.tourguide.service,RewardsService,51,396,10,20,13,79,10,27,3,19
+tourguide,com.openclassrooms.tourguide.user,UserPreferences,14,39,0,0,6,16,4,7,4,7
+tourguide,com.openclassrooms.tourguide.user,UserReward,16,12,0,0,7,5,3,1,3,1
+tourguide,com.openclassrooms.tourguide.user,User,53,86,3,1,16,24,12,10,10,10
+tourguide,com.openclassrooms.tourguide.tracker,Tracker,10,72,1,1,2,21,2,4,1,4
+tourguide,com.openclassrooms.tourguide,TourguideApplication,5,3,0,0,2,1,1,1,1,1
+tourguide,com.openclassrooms.tourguide.configuration,ExecutorConfig,0,11,0,0,0,3,0,2,0,2
+tourguide,com.openclassrooms.tourguide.configuration,TourGuideModule,0,18,0,0,0,4,0,4,0,4
+tourguide,com.openclassrooms.tourguide.dto,NearbyAttractionDTO,24,0,0,0,9,0,1,0,1,0
+tourguide,com.openclassrooms.tourguide.controller,TourGuideController,121,4,2,0,22,1,10,1,9,1

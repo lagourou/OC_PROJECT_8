@@ -1,18 +1,23 @@
 package com.openclassrooms.tourguide.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.openclassrooms.tourguide.user.User;
 import com.openclassrooms.tourguide.user.UserReward;
 
@@ -37,11 +42,11 @@ public class RewardsService {
 	private final RewardCentral rewardsCentral;
 	private final Map<String, Double> distanceCache = new ConcurrentHashMap<>();
 	private final ExecutorService executor;
-	private List<User> allUsers = Collections.synchronizedList(new ArrayList<>());
 
-	private static final int MAX_THREADS = Runtime.getRuntime().availableProcessors() * 4;
+	private static final int MAX_THREADS = 64;
 	private static final Semaphore semaphore = new Semaphore(MAX_THREADS);
 	private int maxAttractionsToCheck = 10;
+	private List<User> allUsers = new ArrayList<>();
 
 	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral, ExecutorService executorService) {
 		this.gpsUtil = gpsUtil;
@@ -59,7 +64,10 @@ public class RewardsService {
 
 	@PreDestroy
 	public void shutdownExecutor() {
-		executor.shutdown();
+		if (!executor.isShutdown()) {
+			executor.shutdown();
+		}
+
 	}
 
 	public void setAllUsers(List<User> allUsers) {
@@ -82,40 +90,50 @@ public class RewardsService {
 		this.proximityBuffer = defaultProximityBuffer;
 	}
 
-	public void calculateRewards(User user) {
+	public void calculateRewards(User user, List<Attraction> attractions) {
 
-		if (user.getUserId().hashCode() % 5000 == 0) {
-			log.info("Processing rewards for user: {}", user.getUserName());
+		if (Math.abs(user.getUserId().hashCode()) % 5000 == 0) {
+			log.info("User: {}, visitedLocations: {}, attractionsToCheck: {}",
+					user.getUserName(), user.getVisitedLocations().size(), attractions.size());
 		}
 
-		List<VisitedLocation> userLocations = new ArrayList<>(user.getVisitedLocations());
-		List<Attraction> attractions = gpsUtil.getAttractions();
+		List<VisitedLocation> userLocations = user.getVisitedLocations();
 
-		List<Attraction> attractionsToCheck = attractions.stream()
-				.sorted(Comparator.comparingDouble(
-						attraction -> cachedDistance(user.getLastVisitedLocation().location, attraction)))
-				.limit(Math.max(1, maxAttractionsToCheck))
-				.collect(Collectors.toList());
+		PriorityQueue<Attraction> closestAttractions = new PriorityQueue<>(
+				Comparator.comparingDouble(
+						attraction -> -cachedDistance(user.getLastVisitedLocation().location, attraction)));
+
+		for (Attraction attraction : attractions) {
+			closestAttractions.offer(attraction);
+			if (closestAttractions.size() > maxAttractionsToCheck) {
+				closestAttractions.poll();
+			}
+		}
+
+		List<Attraction> attractionsToCheck = new ArrayList<>(closestAttractions);
+
+		Set<UUID> rewardedAttractionIds = user.getUserRewards().stream()
+				.map(r -> r.attraction.attractionId)
+				.collect(Collectors.toSet());
 
 		for (VisitedLocation visitedLocation : userLocations) {
 			for (Attraction attraction : attractionsToCheck) {
-				if (nearAttraction(visitedLocation, attraction)) {
-					boolean alreadyRewarded = user.getUserRewards().stream()
-							.anyMatch(r -> r.attraction.attractionId.equals(attraction.attractionId));
-					if (!alreadyRewarded) {
-						int points = getRewardPoints(attraction, user);
-						user.addUserReward(new UserReward(visitedLocation, attraction, points));
-					}
+				if (nearAttraction(visitedLocation, attraction)
+						&& !rewardedAttractionIds.contains(attraction.attractionId)) {
+					int points = getRewardPoints(attraction, user);
+					user.addUserReward(new UserReward(visitedLocation, attraction, points));
+					rewardedAttractionIds.add(attraction.attractionId);
 				}
 			}
 		}
 	}
 
-	public CompletableFuture<Void> calculateRewardsAsync(User user) {
+	public CompletableFuture<Void> calculateRewardsAsync(User user, List<Attraction> attractions) {
 		return CompletableFuture.runAsync(() -> {
 			try {
+
 				semaphore.acquire();
-				calculateRewards(user);
+				calculateRewards(user, attractions);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				throw new RuntimeException("Thread interrupted", e);
@@ -125,9 +143,26 @@ public class RewardsService {
 		}, executor);
 	}
 
+	public void calculateRewardsForAllUsers(List<User> users, List<Attraction> attractions) {
+		List<CompletableFuture<Void>> futures = users.stream()
+				.map(user -> calculateRewardsAsync(user, attractions))
+
+				.collect(Collectors.toList());
+
+		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+	}
+
+	private String getCacheKey(Location location, Attraction attraction) {
+
+		double lat = Math.round(location.latitude * 100.0) / 100.0;
+		double lon = Math.round(location.longitude * 100.0) / 100.0;
+		return lat + "," + lon + "_" + attraction.attractionId;
+	}
+
 	private double cachedDistance(Location location, Attraction attraction) {
-		return distanceCache.computeIfAbsent(attraction.attractionName,
-				key -> getDistance(location, attraction));
+		String key = getCacheKey(location, attraction);
+		return distanceCache.computeIfAbsent(key, k -> getDistance(location, attraction));
 	}
 
 	public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
@@ -138,8 +173,16 @@ public class RewardsService {
 		return getDistance(attraction, visitedLocation.location) <= proximityBuffer;
 	}
 
+	private final Cache<String, Integer> rewardPointsCache = Caffeine.newBuilder()
+			.maximumSize(100_000)
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+			.build();
+
 	public int getRewardPoints(Attraction attraction, User user) {
-		return Math.max(rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()), 1);
+		String key = attraction.attractionName + ":" + user.getUserId();
+		return rewardPointsCache.get(key, k -> Math.max(
+				rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()),
+				1));
 	}
 
 	public double getDistance(Location loc1, Location loc2) {

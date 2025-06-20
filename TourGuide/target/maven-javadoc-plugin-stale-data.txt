@@ -1,0 +1,109 @@
+@options
+@packages
+-classpath
+'C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-actuator/3.4.6/spring-boot-starter-actuator-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter/3.4.6/spring-boot-starter-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot/3.4.6/spring-boot-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/3.4.6/spring-boot-autoconfigure-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-logging/3.4.6/spring-boot-starter-logging-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/ch/qos/logback/logback-classic/1.5.18/logback-classic-1.5.18.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/ch/qos/logback/logback-core/1.5.18/logback-core-1.5.18.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.24.3/log4j-to-slf4j-2.24.3.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/logging/log4j/log4j-api/2.24.3/log4j-api-2.24.3.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/slf4j/jul-to-slf4j/2.0.17/jul-to-slf4j-2.0.17.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/yaml/snakeyaml/2.3/snakeyaml-2.3.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-actuator-autoconfigure/3.4.6/spring-boot-actuator-autoconfigure-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-actuator/3.4.6/spring-boot-actuator-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.18.4/jackson-databind-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.18.4/jackson-annotations-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.18.4/jackson-core-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.18.4/jackson-datatype-jsr310-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/io/micrometer/micrometer-observation/1.14.7/micrometer-observation-1.14.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/io/micrometer/micrometer-commons/1.14.7/micrometer-commons-1.14.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/io/micrometer/micrometer-jakarta9/1.14.7/micrometer-jakarta9-1.14.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/io/micrometer/micrometer-core/1.14.7/micrometer-core-1.14.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-validation/3.4.6/spring-boot-starter-validation-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/10.1.41/tomcat-embed-el-10.1.41.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/hibernate/validator/hibernate-validator/8.0.2.Final/hibernate-validator-8.0.2.Final.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/jakarta/validation/jakarta.validation-api/3.0.2/jakarta.validation-api-3.0.2.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/jboss/logging/jboss-logging/3.6.1.Final/jboss-logging-3.6.1.Final.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/classmate/1.7.0/classmate-1.7.0.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-web/3.4.6/spring-boot-starter-web-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-json/3.4.6/spring-boot-starter-json-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.18.4/jackson-datatype-jdk8-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/fasterxml/jackson/module/jackson-module-parameter-names/2.18.4/jackson-module-parameter-names-2.18.4.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/3.4.6/spring-boot-starter-tomcat-3.4.6.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.41/tomcat-embed-core-10.1.41.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.41/tomcat-embed-websocket-10.1.41.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-web/6.2.7/spring-web-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-beans/6.2.7/spring-beans-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-webmvc/6.2.7/spring-webmvc-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-aop/6.2.7/spring-aop-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-context/6.2.7/spring-context-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-expression/6.2.7/spring-expression-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-core/6.2.7/spring-core-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/springframework/spring-jcl/6.2.7/spring-jcl-6.2.7.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/gpsUtil/gpsUtil/1.0.0/gpsUtil-1.0.0.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/google/errorprone/error_prone_annotations/2.0.18/error_prone_annotations-2.0.18.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/tripPricer/tripPricer/1.0.0/tripPricer-1.0.0.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/rewardCentral/rewardCentral/1.0.0/rewardCentral-1.0.0.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/com/github/ben-manes/caffeine/caffeine/3.1.8/caffeine-3.1.8.jar;C:/Users/AGOUROU GUSTAVE/.m2/repository/org/checkerframework/checker-qual/3.37.0/checker-qual-3.37.0.jar'
+-encoding
+'UTF-8'
+-private
+--release
+17
+-sourcepath
+'C:/Users/AGOUROU GUSTAVE/Downloads/Open Classroom/P8/JavaPathENProject8-master/TourGuide/src/main/java;C:/Users/AGOUROU GUSTAVE/Downloads/Open Classroom/P8/JavaPathENProject8-master/TourGuide/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/AGOUROU GUSTAVE/Downloads/Open Classroom/P8/JavaPathENProject8-master/TourGuide/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'tourguide 0.0.1-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'tourguide 0.0.1-SNAPSHOT API'
+com.openclassrooms.tourguide.configuration
+com.openclassrooms.tourguide.controller
+com.openclassrooms.tourguide.dto
+com.openclassrooms.tourguide.helper
+com.openclassrooms.tourguide.service
+com.openclassrooms.tourguide
+com.openclassrooms.tourguide.tracker
+com.openclassrooms.tourguide.user
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\3.4.6\spring-boot-starter-actuator-3.4.6.jar = 1747920205519
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter\3.4.6\spring-boot-starter-3.4.6.jar = 1747920206149
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot\3.4.6\spring-boot-3.4.6.jar = 1747920217706
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.4.6\spring-boot-autoconfigure-3.4.6.jar = 1747920218006
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.4.6\spring-boot-starter-logging-3.4.6.jar = 1747920206148
+C:\Users\AGOUROU GUSTAVE\.m2\repository\ch\qos\logback\logback-classic\1.5.18\logback-classic-1.5.18.jar = 1742545076629
+C:\Users\AGOUROU GUSTAVE\.m2\repository\ch\qos\logback\logback-core\1.5.18\logback-core-1.5.18.jar = 1742545076937
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.24.3\log4j-to-slf4j-2.24.3.jar = 1741634097284
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\logging\log4j\log4j-api\2.24.3\log4j-api-2.24.3.jar = 1741634097496
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar = 1742545076392
+C:\Users\AGOUROU GUSTAVE\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar = 1741634097465
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\yaml\snakeyaml\2.3\snakeyaml-2.3.jar = 1741634097797
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\3.4.6\spring-boot-actuator-autoconfigure-3.4.6.jar = 1747920209950
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-actuator\3.4.6\spring-boot-actuator-3.4.6.jar = 1747920206160
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.18.4\jackson-databind-2.18.4.jar = 1747920210669
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.18.4\jackson-annotations-2.18.4.jar = 1747920206636
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.18.4\jackson-core-2.18.4.jar = 1747920210173
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.18.4\jackson-datatype-jsr310-2.18.4.jar = 1747920208195
+C:\Users\AGOUROU GUSTAVE\.m2\repository\io\micrometer\micrometer-observation\1.14.7\micrometer-observation-1.14.7.jar = 1747920208143
+C:\Users\AGOUROU GUSTAVE\.m2\repository\io\micrometer\micrometer-commons\1.14.7\micrometer-commons-1.14.7.jar = 1747920211179
+C:\Users\AGOUROU GUSTAVE\.m2\repository\io\micrometer\micrometer-jakarta9\1.14.7\micrometer-jakarta9-1.14.7.jar = 1747920211102
+C:\Users\AGOUROU GUSTAVE\.m2\repository\io\micrometer\micrometer-core\1.14.7\micrometer-core-1.14.7.jar = 1747920211766
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.4.6\spring-boot-starter-validation-3.4.6.jar = 1747920217675
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.41\tomcat-embed-el-10.1.41.jar = 1747920217737
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.2.Final\hibernate-validator-8.0.2.Final.jar = 1741683087654
+C:\Users\AGOUROU GUSTAVE\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar = 1741683087228
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\jboss\logging\jboss-logging\3.6.1.Final\jboss-logging-3.6.1.Final.jar = 1741685723436
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar = 1741682984310
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.4.6\spring-boot-starter-web-3.4.6.jar = 1747920213757
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.4.6\spring-boot-starter-json-3.4.6.jar = 1747920214028
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.18.4\jackson-datatype-jdk8-2.18.4.jar = 1747920215614
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.18.4\jackson-module-parameter-names-2.18.4.jar = 1747920214992
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.4.6\spring-boot-starter-tomcat-3.4.6.jar = 1747920214818
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.41\tomcat-embed-core-10.1.41.jar = 1747920216422
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.41\tomcat-embed-websocket-10.1.41.jar = 1747920215292
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-web\6.2.7\spring-web-6.2.7.jar = 1747920216228
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-beans\6.2.7\spring-beans-6.2.7.jar = 1747920214668
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-webmvc\6.2.7\spring-webmvc-6.2.7.jar = 1747920216046
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-aop\6.2.7\spring-aop-6.2.7.jar = 1747920216761
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-context\6.2.7\spring-context-6.2.7.jar = 1747920213775
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-expression\6.2.7\spring-expression-6.2.7.jar = 1747920216265
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar = 1742545078376
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-core\6.2.7\spring-core-6.2.7.jar = 1747920212615
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\springframework\spring-jcl\6.2.7\spring-jcl-6.2.7.jar = 1747920213012
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar = 1743023402103
+C:\Users\AGOUROU GUSTAVE\.m2\repository\gpsUtil\gpsUtil\1.0.0\gpsUtil-1.0.0.jar = 1690945640000
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\google\code\findbugs\jsr305\1.3.9\jsr305-1.3.9.jar = 1748853906784
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\google\errorprone\error_prone_annotations\2.0.18\error_prone_annotations-2.0.18.jar = 1748853908174
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\google\j2objc\j2objc-annotations\1.1\j2objc-annotations-1.1.jar = 1748853907617
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\codehaus\mojo\animal-sniffer-annotations\1.14\animal-sniffer-annotations-1.14.jar = 1748853906940
+C:\Users\AGOUROU GUSTAVE\.m2\repository\tripPricer\tripPricer\1.0.0\tripPricer-1.0.0.jar = 1690945640000
+C:\Users\AGOUROU GUSTAVE\.m2\repository\rewardCentral\rewardCentral\1.0.0\rewardCentral-1.0.0.jar = 1690945640000
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\projectlombok\lombok\1.18.38\lombok-1.18.38.jar = 1744971828399
+C:\Users\AGOUROU GUSTAVE\.m2\repository\com\github\ben-manes\caffeine\caffeine\3.1.8\caffeine-3.1.8.jar = 1749651301339
+C:\Users\AGOUROU GUSTAVE\.m2\repository\org\checkerframework\checker-qual\3.37.0\checker-qual-3.37.0.jar = 1749651301555
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\src\main\java = 1748851176330
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\generated-sources\annotations = 1750432581141
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\allclasses-index.html = 1750433687610
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\allpackages-index.html = 1750433687630
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\constant-values.html = 1750433686935
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\element-list = 1750433686305
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\help-doc.html = 1750433688139
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\index-all.html = 1750433688082
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\index.html = 1750433687501
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\jquery-ui.overrides.css = 1750433688346
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\member-search-index.js = 1750433687654
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\module-search-index.js = 1750433687635
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\overview-summary.html = 1750433688087
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\overview-tree.html = 1750433687462
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\package-search-index.js = 1750433687640
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\script.js = 1750433688161
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\search.js = 1750433688178
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\stylesheet.css = 1750433688149
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\tag-search-index.js = 1750433687657
+C:\Users\AGOUROU GUSTAVE\Downloads\Open Classroom\P8\JavaPathENProject8-master\TourGuide\target\site\apidocs\type-search-index.js = 1750433687646
