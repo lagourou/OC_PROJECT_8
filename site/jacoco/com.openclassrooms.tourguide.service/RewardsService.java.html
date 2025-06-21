@@ -48,154 +48,248 @@ public class RewardsService {
 <span class="fc" id="L48">	private int maxAttractionsToCheck = 10;</span>
 <span class="fc" id="L49">	private List&lt;User&gt; allUsers = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L51">	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral, ExecutorService executorService) {</span>
-<span class="fc" id="L52">		this.gpsUtil = gpsUtil;</span>
-<span class="fc" id="L53">		this.rewardsCentral = rewardCentral;</span>
-<span class="fc" id="L54">		this.executor = executorService;</span>
+	/**
+	 * Creates a rewards management service with GPS and RewardCentral services, and
+	 * a thread pool for asynchronous tasks.
+	 *
+	 * @param gpsUtil         Geolocation service
+	 * @param rewardCentral   Service to get reward points
+	 * @param executorService Executor for parallel tasks
+	 * @throws IllegalStateException if the executor is null or already arrested
+	 */
+<span class="fc" id="L60">	public RewardsService(GpsUtil gpsUtil, RewardCentral rewardCentral, ExecutorService executorService) {</span>
+<span class="fc" id="L61">		this.gpsUtil = gpsUtil;</span>
+<span class="fc" id="L62">		this.rewardsCentral = rewardCentral;</span>
+<span class="fc" id="L63">		this.executor = executorService;</span>
 
-<span class="pc bpc" id="L56" title="2 of 4 branches missed.">		if (executor == null || executor.isShutdown()) {</span>
-<span class="nc" id="L57">			throw new IllegalStateException(&quot;ExecutorService must be initialized and active&quot;);</span>
+<span class="pc bpc" id="L65" title="2 of 4 branches missed.">		if (executor == null || executor.isShutdown()) {</span>
+<span class="nc" id="L66">			throw new IllegalStateException(&quot;ExecutorService must be initialized and active&quot;);</span>
 		}
-<span class="fc" id="L59">	}</span>
+<span class="fc" id="L68">	}</span>
 
+	/**
+	 * Sets the maximum number of attractions to analyze to calculate rewards.
+	 *
+	 * @param maxAttractionsToCheck Limit on the number of attractions to be
+	 *                              considered
+	 */
 	public void setMaxAttractionsToCheck(int maxAttractionsToCheck) {
-<span class="fc" id="L62">		this.maxAttractionsToCheck = maxAttractionsToCheck;</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc" id="L77">		this.maxAttractionsToCheck = maxAttractionsToCheck;</span>
+<span class="fc" id="L78">	}</span>
 
+	/**
+	 * Cleanly shuts down the thread pool if it is still active.
+	 */
 	@PreDestroy
 	public void shutdownExecutor() {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (!executor.isShutdown()) {</span>
-<span class="fc" id="L68">			executor.shutdown();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (!executor.isShutdown()) {</span>
+<span class="fc" id="L86">			executor.shutdown();</span>
 		}
 
-<span class="fc" id="L71">	}</span>
+<span class="fc" id="L89">	}</span>
 
+	/**
+	 * Replaces the list of service users with a new one.
+	 *
+	 * @param allUsers List of users to register
+	 * @throws IllegalStateException if the list is empty or null
+	 */
 	public void setAllUsers(List&lt;User&gt; allUsers) {
-<span class="nc bnc" id="L74" title="All 4 branches missed.">		if (allUsers == null || allUsers.isEmpty()) {</span>
-<span class="nc" id="L75">			throw new IllegalStateException(&quot;User list is empty. Cannot initialize users.&quot;);</span>
+<span class="nc bnc" id="L98" title="All 4 branches missed.">		if (allUsers == null || allUsers.isEmpty()) {</span>
+<span class="nc" id="L99">			throw new IllegalStateException(&quot;User list is empty. Cannot initialize users.&quot;);</span>
 		}
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		if (this.allUsers == null) {</span>
-<span class="nc" id="L78">			this.allUsers = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">		if (this.allUsers == null) {</span>
+<span class="nc" id="L102">			this.allUsers = new ArrayList&lt;&gt;();</span>
 		} else {
-<span class="nc" id="L80">			this.allUsers.clear();</span>
+<span class="nc" id="L104">			this.allUsers.clear();</span>
 		}
-<span class="nc" id="L82">		this.allUsers.addAll(allUsers);</span>
-<span class="nc" id="L83">	}</span>
+<span class="nc" id="L106">		this.allUsers.addAll(allUsers);</span>
+<span class="nc" id="L107">	}</span>
 
+	/**
+	 * Changes the maximum distance to consider an attraction as close.
+	 *
+	 * @param proximityBuffer Distance value to use
+	 */
 	public void setProximityBuffer(int proximityBuffer) {
-<span class="fc" id="L86">		this.proximityBuffer = proximityBuffer;</span>
-<span class="fc" id="L87">	}</span>
+<span class="fc" id="L115">		this.proximityBuffer = proximityBuffer;</span>
+<span class="fc" id="L116">	}</span>
 
+	/**
+	 * Resets the proximity distance to its default value.
+	 */
 	public void setDefaultProximityBuffer() {
-<span class="nc" id="L90">		this.proximityBuffer = defaultProximityBuffer;</span>
-<span class="nc" id="L91">	}</span>
+<span class="nc" id="L122">		this.proximityBuffer = defaultProximityBuffer;</span>
+<span class="nc" id="L123">	}</span>
 
+	/**
+	 * Calculates rewards for a user based on their past visits.
+	 *
+	 * @param user        Concerned user
+	 * @param attractions List of available attractions
+	 */
 	public void calculateRewards(User user, List&lt;Attraction&gt; attractions) {
 
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (Math.abs(user.getUserId().hashCode()) % 5000 == 0) {</span>
-<span class="fc" id="L96">			log.info(&quot;User: {}, visitedLocations: {}, attractionsToCheck: {}&quot;,</span>
-<span class="fc" id="L97">					user.getUserName(), user.getVisitedLocations().size(), attractions.size());</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (Math.abs(user.getUserId().hashCode()) % 5000 == 0) {</span>
+<span class="fc" id="L134">			log.info(&quot;User: {}, visitedLocations: {}, attractionsToCheck: {}&quot;,</span>
+<span class="fc" id="L135">					user.getUserName(), user.getVisitedLocations().size(), attractions.size());</span>
 		}
 
-<span class="fc" id="L100">		List&lt;VisitedLocation&gt; userLocations = user.getVisitedLocations();</span>
+<span class="fc" id="L138">		List&lt;VisitedLocation&gt; userLocations = user.getVisitedLocations();</span>
 
-<span class="fc" id="L102">		PriorityQueue&lt;Attraction&gt; closestAttractions = new PriorityQueue&lt;&gt;(</span>
-<span class="fc" id="L103">				Comparator.comparingDouble(</span>
-<span class="fc" id="L104">						attraction -&gt; -cachedDistance(user.getLastVisitedLocation().location, attraction)));</span>
+<span class="fc" id="L140">		PriorityQueue&lt;Attraction&gt; closestAttractions = new PriorityQueue&lt;&gt;(</span>
+<span class="fc" id="L141">				Comparator.comparingDouble(</span>
+<span class="fc" id="L142">						attraction -&gt; -cachedDistance(user.getLastVisitedLocation().location, attraction)));</span>
 
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (Attraction attraction : attractions) {</span>
-<span class="fc" id="L107">			closestAttractions.offer(attraction);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (closestAttractions.size() &gt; maxAttractionsToCheck) {</span>
-<span class="fc" id="L109">				closestAttractions.poll();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (Attraction attraction : attractions) {</span>
+<span class="fc" id="L145">			closestAttractions.offer(attraction);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			if (closestAttractions.size() &gt; maxAttractionsToCheck) {</span>
+<span class="fc" id="L147">				closestAttractions.poll();</span>
 			}
-<span class="fc" id="L111">		}</span>
+<span class="fc" id="L149">		}</span>
 
-<span class="fc" id="L113">		List&lt;Attraction&gt; attractionsToCheck = new ArrayList&lt;&gt;(closestAttractions);</span>
+<span class="fc" id="L151">		List&lt;Attraction&gt; attractionsToCheck = new ArrayList&lt;&gt;(closestAttractions);</span>
 
-<span class="fc" id="L115">		Set&lt;UUID&gt; rewardedAttractionIds = user.getUserRewards().stream()</span>
-<span class="pc" id="L116">				.map(r -&gt; r.attraction.attractionId)</span>
-<span class="fc" id="L117">				.collect(Collectors.toSet());</span>
+<span class="fc" id="L153">		Set&lt;UUID&gt; rewardedAttractionIds = user.getUserRewards().stream()</span>
+<span class="pc" id="L154">				.map(r -&gt; r.attraction.attractionId)</span>
+<span class="fc" id="L155">				.collect(Collectors.toSet());</span>
 
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		for (VisitedLocation visitedLocation : userLocations) {</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			for (Attraction attraction : attractionsToCheck) {</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				if (nearAttraction(visitedLocation, attraction)</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">						&amp;&amp; !rewardedAttractionIds.contains(attraction.attractionId)) {</span>
-<span class="fc" id="L123">					int points = getRewardPoints(attraction, user);</span>
-<span class="fc" id="L124">					user.addUserReward(new UserReward(visitedLocation, attraction, points));</span>
-<span class="fc" id="L125">					rewardedAttractionIds.add(attraction.attractionId);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (VisitedLocation visitedLocation : userLocations) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (Attraction attraction : attractionsToCheck) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">				if (nearAttraction(visitedLocation, attraction)</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">						&amp;&amp; !rewardedAttractionIds.contains(attraction.attractionId)) {</span>
+<span class="fc" id="L161">					int points = getRewardPoints(attraction, user);</span>
+<span class="fc" id="L162">					user.addUserReward(new UserReward(visitedLocation, attraction, points));</span>
+<span class="fc" id="L163">					rewardedAttractionIds.add(attraction.attractionId);</span>
 				}
-<span class="fc" id="L127">			}</span>
-<span class="fc" id="L128">		}</span>
-<span class="fc" id="L129">	}</span>
+<span class="fc" id="L165">			}</span>
+<span class="fc" id="L166">		}</span>
+<span class="fc" id="L167">	}</span>
 
+	/**
+	 * Calculates rewards for a user asynchronously (in the background).
+	 *
+	 * @param user        Concerned user
+	 * @param attractions List of available attractions
+	 * @return An asynchronous task representing the current computation
+	 */
 	public CompletableFuture&lt;Void&gt; calculateRewardsAsync(User user, List&lt;Attraction&gt; attractions) {
-<span class="fc" id="L132">		return CompletableFuture.runAsync(() -&gt; {</span>
+<span class="fc" id="L177">		return CompletableFuture.runAsync(() -&gt; {</span>
 			try {
 
-<span class="fc" id="L135">				semaphore.acquire();</span>
-<span class="fc" id="L136">				calculateRewards(user, attractions);</span>
-<span class="nc" id="L137">			} catch (InterruptedException e) {</span>
-<span class="nc" id="L138">				Thread.currentThread().interrupt();</span>
-<span class="nc" id="L139">				throw new RuntimeException(&quot;Thread interrupted&quot;, e);</span>
+<span class="fc" id="L180">				semaphore.acquire();</span>
+<span class="fc" id="L181">				calculateRewards(user, attractions);</span>
+<span class="nc" id="L182">			} catch (InterruptedException e) {</span>
+<span class="nc" id="L183">				Thread.currentThread().interrupt();</span>
+<span class="nc" id="L184">				throw new RuntimeException(&quot;Thread interrupted&quot;, e);</span>
 			} finally {
-<span class="fc" id="L141">				semaphore.release();</span>
+<span class="fc" id="L186">				semaphore.release();</span>
 			}
-<span class="fc" id="L143">		}, executor);</span>
+<span class="fc" id="L188">		}, executor);</span>
 	}
 
+	/**
+	 * Calculates rewards for a list of users in parallel.
+	 *
+	 * @param users       User list
+	 * @param attractions List of attractions to consider
+	 */
 	public void calculateRewardsForAllUsers(List&lt;User&gt; users, List&lt;Attraction&gt; attractions) {
-<span class="fc" id="L147">		List&lt;CompletableFuture&lt;Void&gt;&gt; futures = users.stream()</span>
-<span class="fc" id="L148">				.map(user -&gt; calculateRewardsAsync(user, attractions))</span>
+<span class="fc" id="L198">		List&lt;CompletableFuture&lt;Void&gt;&gt; futures = users.stream()</span>
+<span class="fc" id="L199">				.map(user -&gt; calculateRewardsAsync(user, attractions))</span>
 
-<span class="fc" id="L150">				.collect(Collectors.toList());</span>
+<span class="fc" id="L201">				.collect(Collectors.toList());</span>
 
-<span class="fc" id="L152">		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();</span>
+<span class="fc" id="L203">		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();</span>
 
-<span class="fc" id="L154">	}</span>
+<span class="fc" id="L205">	}</span>
 
+	/**
+	 * Creates a unique key to associate a geographic location with an attraction.
+	 *
+	 * Latitude and longitude coordinates are rounded to two decimal places to
+	 * reduce precision and improve cache reuse.*
+	 *
+	 * @param location   Reference location
+	 * @param attraction Attraction concerned
+	 * @return A string representing the associated cache key
+	 */
 	private String getCacheKey(Location location, Attraction attraction) {
 
-<span class="fc" id="L158">		double lat = Math.round(location.latitude * 100.0) / 100.0;</span>
-<span class="fc" id="L159">		double lon = Math.round(location.longitude * 100.0) / 100.0;</span>
-<span class="fc" id="L160">		return lat + &quot;,&quot; + lon + &quot;_&quot; + attraction.attractionId;</span>
+<span class="fc" id="L219">		double lat = Math.round(location.latitude * 100.0) / 100.0;</span>
+<span class="fc" id="L220">		double lon = Math.round(location.longitude * 100.0) / 100.0;</span>
+<span class="fc" id="L221">		return lat + &quot;,&quot; + lon + &quot;_&quot; + attraction.attractionId;</span>
 	}
 
+	/**
+	 * Calculates the distance between a location and an attraction with caching.
+	 *
+	 * If the distance has already been calculated for this location and attraction
+	 * combination, it is retrieved from the cache. Otherwise, it is calculated and
+	 * stored.
+	 *
+	 * @param location   Reference location
+	 * @param attraction Target attraction
+	 * @return Distance between location and attraction (in miles)
+	 */
 	private double cachedDistance(Location location, Attraction attraction) {
-<span class="fc" id="L164">		String key = getCacheKey(location, attraction);</span>
-<span class="fc" id="L165">		return distanceCache.computeIfAbsent(key, k -&gt; getDistance(location, attraction));</span>
+<span class="fc" id="L236">		String key = getCacheKey(location, attraction);</span>
+<span class="fc" id="L237">		return distanceCache.computeIfAbsent(key, k -&gt; getDistance(location, attraction));</span>
 	}
 
+	/**
+	 * Check if an attraction is close enough to a location.
+	 *
+	 * @param attraction Attraction to analyze
+	 * @param location   Position à comparer
+	 * @return true si la distance est inférieure à la limite, false sinon
+	 */
 	public boolean isWithinAttractionProximity(Attraction attraction, Location location) {
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">		return getDistance(attraction, location) &lt;= attractionProximityRange;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">		return getDistance(attraction, location) &lt;= attractionProximityRange;</span>
 	}
 
 	private boolean nearAttraction(VisitedLocation visitedLocation, Attraction attraction) {
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		return getDistance(attraction, visitedLocation.location) &lt;= proximityBuffer;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		return getDistance(attraction, visitedLocation.location) &lt;= proximityBuffer;</span>
 	}
 
-<span class="fc" id="L176">	private final Cache&lt;String, Integer&gt; rewardPointsCache = Caffeine.newBuilder()</span>
-<span class="fc" id="L177">			.maximumSize(100_000)</span>
-<span class="fc" id="L178">			.expireAfterWrite(10, TimeUnit.MINUTES)</span>
-<span class="fc" id="L179">			.build();</span>
+<span class="fc" id="L255">	private final Cache&lt;String, Integer&gt; rewardPointsCache = Caffeine.newBuilder()</span>
+<span class="fc" id="L256">			.maximumSize(100_000)</span>
+<span class="fc" id="L257">			.expireAfterWrite(10, TimeUnit.MINUTES)</span>
+<span class="fc" id="L258">			.build();</span>
 
+	/**
+	 * Returns the number of reward points earned by a user at a given attraction.
+	 * Uses a cache to speed up the result.*
+	 * 
+	 * @param attraction The attraction visited
+	 * @param user       The user concerned
+	 * @return Number of points awarded
+	 */
 	public int getRewardPoints(Attraction attraction, User user) {
-<span class="fc" id="L182">		String key = attraction.attractionName + &quot;:&quot; + user.getUserId();</span>
-<span class="fc" id="L183">		return rewardPointsCache.get(key, k -&gt; Math.max(</span>
-<span class="fc" id="L184">				rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()),</span>
+<span class="fc" id="L269">		String key = attraction.attractionName + &quot;:&quot; + user.getUserId();</span>
+<span class="fc" id="L270">		return rewardPointsCache.get(key, k -&gt; Math.max(</span>
+<span class="fc" id="L271">				rewardsCentral.getAttractionRewardPoints(attraction.attractionId, user.getUserId()),</span>
 				1));
 	}
 
+	/**
+	 * Calculates the distance between two geographic locations.
+	 *
+	 * @param loc1 First point (latitude, longitude)
+	 * @param loc2 Second point
+	 * @return Distance between the two locations in miles
+	 */
 	public double getDistance(Location loc1, Location loc2) {
-<span class="fc" id="L189">		double lat1 = Math.toRadians(loc1.latitude);</span>
-<span class="fc" id="L190">		double lon1 = Math.toRadians(loc1.longitude);</span>
-<span class="fc" id="L191">		double lat2 = Math.toRadians(loc2.latitude);</span>
-<span class="fc" id="L192">		double lon2 = Math.toRadians(loc2.longitude);</span>
+<span class="fc" id="L283">		double lat1 = Math.toRadians(loc1.latitude);</span>
+<span class="fc" id="L284">		double lon1 = Math.toRadians(loc1.longitude);</span>
+<span class="fc" id="L285">		double lat2 = Math.toRadians(loc2.latitude);</span>
+<span class="fc" id="L286">		double lon2 = Math.toRadians(loc2.longitude);</span>
 
-<span class="fc" id="L194">		double angle = Math.acos(Math.sin(lat1) * Math.sin(lat2)</span>
-<span class="fc" id="L195">				+ Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2));</span>
+<span class="fc" id="L288">		double angle = Math.acos(Math.sin(lat1) * Math.sin(lat2)</span>
+<span class="fc" id="L289">				+ Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2));</span>
 
-<span class="fc" id="L197">		double nauticalMiles = 60 * Math.toDegrees(angle);</span>
-<span class="fc" id="L198">		return STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;</span>
+<span class="fc" id="L291">		double nauticalMiles = 60 * Math.toDegrees(angle);</span>
+<span class="fc" id="L292">		return STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

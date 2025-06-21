@@ -34,163 +34,325 @@ import gpsUtil.location.VisitedLocation;
 import tripPricer.Provider;
 import tripPricer.TripPricer;
 
+/**
+ * Main service that manages the TourGuide app's features:
+ * - Tracks user locations
+ * - Assigns reward points
+ * - Provides recommendations for nearby attractions
+ * - Generates personalized travel offers
+ */
 @Service
 public class TourGuideService {
 
 	private final ExecutorService executor;
 	private List&lt;User&gt; allUsers;
-<span class="fc" id="L42">	private final Map&lt;String, User&gt; internalUserMap = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L49">	private final Map&lt;String, User&gt; internalUserMap = new ConcurrentHashMap&lt;&gt;();</span>
 	private final GpsUtil gpsUtil;
 	private final RewardsService rewardsService;
-<span class="fc" id="L45">	private final TripPricer tripPricer = new TripPricer();</span>
+<span class="fc" id="L52">	private final TripPricer tripPricer = new TripPricer();</span>
 	public final Tracker tracker;
 	private final boolean startTracker;
 
-<span class="fc" id="L49">	private final Cache&lt;UUID, VisitedLocation&gt; locationCache = Caffeine.newBuilder()</span>
-<span class="fc" id="L50">			.expireAfterWrite(5, TimeUnit.MINUTES)</span>
-<span class="fc" id="L51">			.maximumSize(500_000)</span>
-<span class="fc" id="L52">			.build();</span>
+<span class="fc" id="L56">	private final Cache&lt;UUID, VisitedLocation&gt; locationCache = Caffeine.newBuilder()</span>
+<span class="fc" id="L57">			.expireAfterWrite(5, TimeUnit.MINUTES)</span>
+<span class="fc" id="L58">			.maximumSize(500_000)</span>
+<span class="fc" id="L59">			.build();</span>
 
 	private static final String TRIP_PRICER_API_KEY = &quot;test-server-api-key&quot;;
-<span class="fc" id="L55">	private final boolean testMode = true;</span>
+<span class="fc" id="L62">	private final boolean testMode = true;</span>
+
+	/**
+	 * Builder of the main TourGuide service.
+	 *
+	 * Initializes the necessary components
+	 *
+	 * @param gpsUtil         User geolocation service
+	 * @param rewardsService  Rewards Management Service
+	 * @param executorService Thread pool for asynchronous processing
+	 * @param startTracker    Indicates whether to enable automatic user tracking
+	 *
+	 */
 
 	public TourGuideService(GpsUtil gpsUtil, RewardsService rewardsService, ExecutorService executorService,
-<span class="fc" id="L58">			@Value(&quot;${tourguide.startTracker:true}&quot;) boolean startTracker) {</span>
-<span class="fc" id="L59">		this.gpsUtil = gpsUtil;</span>
-<span class="fc" id="L60">		this.rewardsService = rewardsService;</span>
-<span class="fc" id="L61">		this.executor = executorService;</span>
-<span class="fc" id="L62">		this.startTracker = startTracker;</span>
+<span class="fc" id="L77">			@Value(&quot;${tourguide.startTracker:true}&quot;) boolean startTracker) {</span>
+<span class="fc" id="L78">		this.gpsUtil = gpsUtil;</span>
+<span class="fc" id="L79">		this.rewardsService = rewardsService;</span>
+<span class="fc" id="L80">		this.executor = executorService;</span>
+<span class="fc" id="L81">		this.startTracker = startTracker;</span>
 
-<span class="fc" id="L64">		Locale.setDefault(Locale.US);</span>
+<span class="fc" id="L83">		Locale.setDefault(Locale.US);</span>
 
 		if (testMode) {
-<span class="fc" id="L67">			initializeInternalUsers();</span>
+<span class="fc" id="L86">			initializeInternalUsers();</span>
 		}
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		this.tracker = startTracker ? new Tracker(this) : null;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (startTracker) {</span>
-<span class="fc" id="L71">			Runtime.getRuntime().addShutdownHook(new Thread(() -&gt; tracker.stopTracking()));</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		this.tracker = startTracker ? new Tracker(this) : null;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (startTracker) {</span>
+<span class="fc" id="L90">			Runtime.getRuntime().addShutdownHook(new Thread(() -&gt; tracker.stopTracking()));</span>
 		}
-<span class="fc" id="L73">	}</span>
+<span class="fc" id="L92">	}</span>
+
+	/**
+	 * Defines a new user list for the service.
+	 *
+	 * This method replaces the current users with those provided in
+	 * parameters
+	 *
+	 * The list must not be null or empty, otherwise an error is thrown.
+	 *
+	 * @param allUsers Liste des utilisateurs à enregistrer
+	 * @throws IllegalArgumentException if the list is null
+	 * @throws IllegalStateException    if the list is empty
+	 */
 
 	public void setAllUsers(List&lt;User&gt; allUsers) {
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (allUsers == null) {</span>
-<span class="nc" id="L77">			throw new IllegalArgumentException(&quot;User list must not be null.&quot;);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (allUsers == null) {</span>
+<span class="nc" id="L109">			throw new IllegalArgumentException(&quot;User list must not be null.&quot;);</span>
 		}
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (allUsers.isEmpty()) {</span>
-<span class="nc" id="L80">			throw new IllegalStateException(&quot;User list is empty. Cannot initialize users.&quot;);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (allUsers.isEmpty()) {</span>
+<span class="nc" id="L112">			throw new IllegalStateException(&quot;User list is empty. Cannot initialize users.&quot;);</span>
 		}
-<span class="fc" id="L82">		this.allUsers = new ArrayList&lt;&gt;(allUsers);</span>
-<span class="fc" id="L83">	}</span>
+<span class="fc" id="L114">		this.allUsers = new ArrayList&lt;&gt;(allUsers);</span>
+<span class="fc" id="L115">	}</span>
+
+	/**
+	 * Returns the list of rewards associated with a given user.
+	 *
+	 * @param user User for whom you want to get the rewards
+	 * @return List of reward points earned by this user
+	 */
 
 	public List&lt;UserReward&gt; getUserRewards(User user) {
-<span class="nc" id="L86">		return user.getUserRewards();</span>
+<span class="nc" id="L125">		return user.getUserRewards();</span>
 	}
+
+	/**
+	 * Returns the user's current location.
+	 *
+	 * If the user already has a saved location, it is returned.
+	 * Otherwise, a new location is obtained in real time.
+	 *
+	 * @param user Concerned user
+	 * @return Last known position or updated position
+	 */
 
 	public VisitedLocation getUserLocation(User user) {
-<span class="nc bnc" id="L90" title="All 2 branches missed.">		return (!user.getVisitedLocations().isEmpty()) ? user.getLastVisitedLocation() : trackUserLocation(user).join();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">		return (!user.getVisitedLocations().isEmpty()) ? user.getLastVisitedLocation() : trackUserLocation(user).join();</span>
 	}
 
+	/**
+	 * Starts location tracking for a given user.
+	 *
+	 * If a recent position is already available in the cache, it is used
+	 * directly.
+	 * Otherwise, a new position is retrieved from the GPS service, added to the
+	 * user's history, and rewards are calculated in the background.
+	 *
+	 * @param user The user to locate
+	 * @return A CompletableFuture containing the user's new (or old) position
+	 */
+
 	public CompletableFuture&lt;VisitedLocation&gt; trackUserLocation(User user) {
-<span class="fc" id="L94">		return CompletableFuture.supplyAsync(() -&gt; {</span>
-<span class="fc" id="L95">			VisitedLocation cachedLocation = locationCache.getIfPresent(user.getUserId());</span>
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">			if (cachedLocation != null)</span>
-<span class="nc" id="L97">				return cachedLocation;</span>
+<span class="fc" id="L155">		return CompletableFuture.supplyAsync(() -&gt; {</span>
+<span class="fc" id="L156">			VisitedLocation cachedLocation = locationCache.getIfPresent(user.getUserId());</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">			if (cachedLocation != null)</span>
+<span class="nc" id="L158">				return cachedLocation;</span>
 
-<span class="fc" id="L99">			VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());</span>
+<span class="fc" id="L160">			VisitedLocation visitedLocation = gpsUtil.getUserLocation(user.getUserId());</span>
 
-<span class="fc" id="L101">			user.addToVisitedLocations(visitedLocation);</span>
-<span class="fc" id="L102">			List&lt;Attraction&gt; attractions = gpsUtil.getAttractions();</span>
-<span class="fc" id="L103">			rewardsService.calculateRewardsAsync(user, attractions);</span>
-<span class="fc" id="L104">			locationCache.put(user.getUserId(), visitedLocation);</span>
-<span class="fc" id="L105">			return visitedLocation;</span>
+<span class="fc" id="L162">			user.addToVisitedLocations(visitedLocation);</span>
+<span class="fc" id="L163">			List&lt;Attraction&gt; attractions = gpsUtil.getAttractions();</span>
+<span class="fc" id="L164">			rewardsService.calculateRewardsAsync(user, attractions);</span>
+<span class="fc" id="L165">			locationCache.put(user.getUserId(), visitedLocation);</span>
+<span class="fc" id="L166">			return visitedLocation;</span>
 		}, executor);
 	}
 
-	public void trackAllUsersLocations(List&lt;User&gt; users) {
-<span class="nc" id="L110">		List&lt;CompletableFuture&lt;Void&gt;&gt; futures = users.stream()</span>
-<span class="nc" id="L111">				.map(user -&gt; trackUserLocation(user).thenAccept(location -&gt; {</span>
-<span class="nc" id="L112">				}))</span>
-<span class="nc" id="L113">				.toList();</span>
+	/**
+	 * Starts location tracking for all provided users.
+	 *
+	 * Each user is located in parallel via asynchronous calls,
+	 * and execution waits for all operations to complete before
+	 * continuing.
+	 *
+	 * @param users List of users to follow
+	 */
 
-<span class="nc" id="L115">		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();</span>
-<span class="nc" id="L116">	}</span>
+	public void trackAllUsersLocations(List&lt;User&gt; users) {
+<span class="nc" id="L181">		List&lt;CompletableFuture&lt;Void&gt;&gt; futures = users.stream()</span>
+<span class="nc" id="L182">				.map(user -&gt; trackUserLocation(user).thenAccept(location -&gt; {</span>
+<span class="nc" id="L183">				}))</span>
+<span class="nc" id="L184">				.toList();</span>
+
+<span class="nc" id="L186">		CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();</span>
+<span class="nc" id="L187">	}</span>
+
+	/**
+	 * Returns the 5 closest attractions to the given position.
+	 *
+	 * This method sorts all known attractions by distance
+	 * from the user's current location, then returns the top 5.
+	 *
+	 * @param visitedLocation Current position of the user
+	 * @return List of the 5 nearest attractions
+	 */
 
 	public List&lt;Attraction&gt; getNearByAttractions(VisitedLocation visitedLocation) {
-<span class="fc" id="L119">		return gpsUtil.getAttractions().stream()</span>
-<span class="fc" id="L120">				.sorted(Comparator.comparingDouble(</span>
-<span class="fc" id="L121">						attraction -&gt; rewardsService.getDistance(attraction, visitedLocation.location)))</span>
-<span class="fc" id="L122">				.limit(5)</span>
-<span class="fc" id="L123">				.collect(Collectors.toList());</span>
+<span class="fc" id="L200">		return gpsUtil.getAttractions().stream()</span>
+<span class="fc" id="L201">				.sorted(Comparator.comparingDouble(</span>
+<span class="fc" id="L202">						attraction -&gt; rewardsService.getDistance(attraction, visitedLocation.location)))</span>
+<span class="fc" id="L203">				.limit(5)</span>
+<span class="fc" id="L204">				.collect(Collectors.toList());</span>
 	}
+
+	/**
+	 * Search for a user by username.
+	 *
+	 * If the user exists in the internal list, it is returned.
+	 * Otherwise, an error is thrown.
+	 *
+	 * @param userName Username to search for
+	 * @return The user corresponding to the given name
+	 * @throws IllegalArgumentException if no user is found
+	 */
 
 	public User getUser(String userName) {
-<span class="fc" id="L127">		User user = internalUserMap.get(userName.trim());</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (user == null) {</span>
-<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;User &quot; + userName + &quot; not found&quot;);</span>
+<span class="fc" id="L219">		User user = internalUserMap.get(userName.trim());</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">		if (user == null) {</span>
+<span class="nc" id="L221">			throw new IllegalArgumentException(&quot;User &quot; + userName + &quot; not found&quot;);</span>
 		}
-<span class="fc" id="L131">		return user;</span>
+<span class="fc" id="L223">		return user;</span>
 	}
+
+	/**
+	 * Returns the full list of registered users.
+	 *
+	 * This method returns a new list containing all users
+	 * currently stored in internal memory.
+	 *
+	 * @return List of all known users
+	 */
 
 	public List&lt;User&gt; getAllUsers() {
-<span class="fc" id="L135">		return new ArrayList&lt;&gt;(internalUserMap.values());</span>
+<span class="fc" id="L236">		return new ArrayList&lt;&gt;(internalUserMap.values());</span>
 	}
+
+	/**
+	 * Adds a user to the internal list if it does not already exist.
+	 *
+	 * If a user with the same name is already registered, they will not be
+	 * replaced.
+	 *
+	 * @param user The user to add
+	 */
 
 	public void addUser(User user) {
-<span class="fc" id="L139">		internalUserMap.putIfAbsent(user.getUserName(), user);</span>
-<span class="fc" id="L140">	}</span>
+<span class="fc" id="L249">		internalUserMap.putIfAbsent(user.getUserName(), user);</span>
+<span class="fc" id="L250">	}</span>
+
+	/**
+	 * Generate a list of personalized travel offers for a user.
+	 *
+	 * The number of reward points is taken into account to calculate
+	 * offers tailored to the user's profile (adults, children,
+	 * duration).
+	 * The list is then saved to the user's account.
+	 *
+	 * @param user The user for whom we want to get offers
+	 * @return List of suppliers with their travel offers
+	 */
 
 	public List&lt;Provider&gt; getTripDeals(User user) {
-<span class="fc" id="L143">		int rewardPoints = user.getUserRewards().stream().mapToInt(UserReward::getRewardPoints).sum();</span>
-<span class="fc" id="L144">		List&lt;Provider&gt; providers = tripPricer.getPrice(</span>
+<span class="fc" id="L265">		int rewardPoints = user.getUserRewards().stream().mapToInt(UserReward::getRewardPoints).sum();</span>
+<span class="fc" id="L266">		List&lt;Provider&gt; providers = tripPricer.getPrice(</span>
 				TRIP_PRICER_API_KEY,
-<span class="fc" id="L146">				user.getUserId(),</span>
-<span class="fc" id="L147">				user.getUserPreferences().getNumberOfAdults(),</span>
-<span class="fc" id="L148">				user.getUserPreferences().getNumberOfChildren(),</span>
-<span class="fc" id="L149">				user.getUserPreferences().getTripDuration(),</span>
+<span class="fc" id="L268">				user.getUserId(),</span>
+<span class="fc" id="L269">				user.getUserPreferences().getNumberOfAdults(),</span>
+<span class="fc" id="L270">				user.getUserPreferences().getNumberOfChildren(),</span>
+<span class="fc" id="L271">				user.getUserPreferences().getTripDuration(),</span>
 				rewardPoints);
-<span class="fc" id="L151">		user.setTripDeals(providers);</span>
-<span class="fc" id="L152">		return providers;</span>
+<span class="fc" id="L273">		user.setTripDeals(providers);</span>
+<span class="fc" id="L274">		return providers;</span>
 	}
+
+	/**
+	 * Initializes a list of internal test users.
+	 *
+	 * The number of users to be created is determined by a configuration value.
+	 * Each user receives a username, a unique name, and a history of simulated
+	 * locations.
+	 * These users are added to the service's internal map.
+	 */
 
 	private void initializeInternalUsers() {
-<span class="fc" id="L156">		int userCount = InternalTestHelper.getInternalUserNumber();</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (int i = 0; i &lt; userCount; i++) {</span>
-<span class="fc" id="L158">			String userName = &quot;internalUser&quot; + i;</span>
-<span class="fc" id="L159">			User user = new User(UUID.randomUUID(), userName, &quot;000&quot;, userName + &quot;@tourGuide.com&quot;);</span>
-<span class="fc" id="L160">			generateUserLocationHistory(user);</span>
-<span class="fc" id="L161">			internalUserMap.put(userName, user);</span>
+<span class="fc" id="L287">		int userCount = InternalTestHelper.getInternalUserNumber();</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">		for (int i = 0; i &lt; userCount; i++) {</span>
+<span class="fc" id="L289">			String userName = &quot;internalUser&quot; + i;</span>
+<span class="fc" id="L290">			User user = new User(UUID.randomUUID(), userName, &quot;000&quot;, userName + &quot;@tourGuide.com&quot;);</span>
+<span class="fc" id="L291">			generateUserLocationHistory(user);</span>
+<span class="fc" id="L292">			internalUserMap.put(userName, user);</span>
 		}
-<span class="fc" id="L163">	}</span>
+<span class="fc" id="L294">	}</span>
+
+	/**
+	 * Generates a random location history for a user.
+	 *
+	 * This method adds three simulated locations with randomly generated
+	 * coordinates
+	 * and dates to create a movement history.
+	 *
+	 * @param user The user to add the positions to
+	 */
 
 	private void generateUserLocationHistory(User user) {
-<span class="fc" id="L166">		IntStream.range(0, 3).forEach(i -&gt; {</span>
-<span class="fc" id="L167">			user.addToVisitedLocations(new VisitedLocation(user.getUserId(),</span>
-<span class="fc" id="L168">					new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));</span>
-<span class="fc" id="L169">		});</span>
-<span class="fc" id="L170">	}</span>
+<span class="fc" id="L307">		IntStream.range(0, 3).forEach(i -&gt; {</span>
+<span class="fc" id="L308">			user.addToVisitedLocations(new VisitedLocation(user.getUserId(),</span>
+<span class="fc" id="L309">					new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));</span>
+<span class="fc" id="L310">		});</span>
+<span class="fc" id="L311">	}</span>
+
+	/**
+	 * Generates a random longitude between -180 and 180 degrees.
+	 *
+	 * This method is used to simulate geographic coordinates.
+	 *
+	 * @return A random longitude value
+	 */
 
 	private double generateRandomLongitude() {
-<span class="fc" id="L173">		double leftLimit = -180;</span>
-<span class="fc" id="L174">		double rightLimit = 180;</span>
-<span class="fc" id="L175">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
+<span class="fc" id="L322">		double leftLimit = -180;</span>
+<span class="fc" id="L323">		double rightLimit = 180;</span>
+<span class="fc" id="L324">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
 	}
 
+	/**
+	 * Generates a random latitude between -85.05 and 85.05 degrees.
+	 *
+	 * @return A random latitude value
+	 */
 	private double generateRandomLatitude() {
-<span class="fc" id="L179">		double leftLimit = -85.05112878;</span>
-<span class="fc" id="L180">		double rightLimit = 85.05112878;</span>
-<span class="fc" id="L181">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
+<span class="fc" id="L333">		double leftLimit = -85.05112878;</span>
+<span class="fc" id="L334">		double rightLimit = 85.05112878;</span>
+<span class="fc" id="L335">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
 	}
 
+	/**
+	 * Creates a random date within the last 30 days.
+	 *
+	 * @return A recent random date
+	 */
 	private Date getRandomTime() {
-<span class="fc" id="L185">		LocalDateTime localDateTime = LocalDateTime.now().minusDays(new Random().nextInt(30));</span>
-<span class="fc" id="L186">		return Date.from(localDateTime.toInstant(ZoneOffset.UTC));</span>
+<span class="fc" id="L344">		LocalDateTime localDateTime = LocalDateTime.now().minusDays(new Random().nextInt(30));</span>
+<span class="fc" id="L345">		return Date.from(localDateTime.toInstant(ZoneOffset.UTC));</span>
 	}
 
+	/**
+	 * Stops user tracking if it is active.
+	 */
 	public void shutdown() {
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		if (tracker != null) {</span>
-<span class="nc" id="L191">			tracker.stopTracking();</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">		if (tracker != null) {</span>
+<span class="nc" id="L353">			tracker.stopTracking();</span>
 		}
-<span class="fc" id="L193">	}</span>
+<span class="fc" id="L355">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
