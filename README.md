@@ -150,32 +150,32 @@ After all tests pass, the application is:
 - Git
 - Docker
 
-  1. Clone the repository:
+### Step 1 — Clone the repository
 
-     ```bash
-     git clone https://github.com/lagourou/OC_PROJECT_8.git
-     cd OC_PROJECT_8/TourGuide
-     ```
+```bash
+git clone https://github.com/lagourou/OC_PROJECT_8.git
+cd OC_PROJECT_8/TourGuide
+```
 
-  2. Install external JARs into your local Maven repository
+### Step 2 — Install external JARs into your local Maven repository
 
-     ```bash
-     mvn install:install-file -Dfile=./TourGuide/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-     ```
+```bash
+mvn install:install-file -Dfile=./TourGuide/libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
+```
 
-     ```bash
-     mvn install:install-file -Dfile=./TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-     ```
+```bash
+mvn install:install-file -Dfile=./TourGuide/libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
+```
 
-     ```bash
-      mvn install:install-file -Dfile=./TourGuide/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
-     ```
+```bash
+ mvn install:install-file -Dfile=./TourGuide/libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
+```
 
-  3. Build the project
+### Step 3 — Build the project
 
-     ```bash
-     mvn clean install
-     ```
+```bash
+mvn clean install
+```
 
 ## Docker configuration
 
@@ -217,13 +217,13 @@ mvn test
 
 Performance tests :
 
-    -TestGetRewardsPerformance
-    -TestTrackLocationPerformance
+    - TestGetRewardsPerformance
+    - TestTrackLocationPerformance
 
 must respect this objective :
 
-      - `highVolumeTrackLocation` → **100 000 users in less than 15 minutes**
-      - `highVolumeGetRewards` → **100 000 users in less than 20 minutes**
+      - highVolumeTrackLocation → 100 000 users in less than 15 minutes
+      - highVolumeGetRewards → 100 000 users in less than 20 minutes
 
 ### Jacoco
 
