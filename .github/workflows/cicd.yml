@@ -182,6 +182,7 @@ jobs:
         run: echo "short_sha=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build Docker image with tags
+        working-directory: TourGuide
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/p8:latest -t ${{ secrets.DOCKER_USERNAME }}/p8:${{ env.short_sha }} .
 
