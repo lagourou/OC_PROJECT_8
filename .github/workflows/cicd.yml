@@ -7,21 +7,55 @@ on:
     branches: [master]
 
 jobs:
-  test-track-location:
-    name: High Volume Track Location Test
+  setup-libs:
+    name: Setup Private JAR Dependencies
     runs-on: ubuntu-latest
+    outputs:
+      maven-cache-key: ${{ steps.set-cache-key.outputs.key }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
+
+      - id: set-cache-key
+        run: echo "key=${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}" >> $GITHUB_OUTPUT
+
+      - name: Cache Maven repository
+        id: cache-maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ steps.set-cache-key.outputs.key }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "temurin"
-      - run: |
-          cd TourGuide
+
+      - name: Install private JARs
+        working-directory: TourGuide
+        run: |
           mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
           mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
           mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
-          mvn test -Dtest=TestTrackLocationPerformance
+
+  test-track-location:
+    name: High Volume Track Location Test
+    runs-on: ubuntu-latest
+    needs: setup-libs
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Run Track Location Performance Test
+        working-directory: TourGuide
+        run: mvn test -Dtest=TestTrackLocationPerformance
 
   test-get-rewards:
     name: High Volume Get Rewards Test
@@ -29,73 +63,104 @@ jobs:
     needs: test-track-location
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "temurin"
-      - run: |
-          cd TourGuide
-          mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
-          mvn test -Dtest=TestGetRewardsPerformance
+
+      - name: Run Get Rewards Performance Test
+        working-directory: TourGuide
+        run: mvn test -Dtest=TestGetRewardsPerformance
 
   test-and-report:
+    name: Build, Test and Report
     runs-on: ubuntu-latest
-    needs: [test-get-rewards]
+    needs: test-get-rewards
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
+
+      - name: Cache Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup-libs.outputs.maven-cache-key }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "temurin"
-      - run: |
-          cd TourGuide
-          mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
-          mvn clean verify jacoco:report surefire-report:report-only javadoc:javadoc
 
-      - uses: actions/upload-artifact@v4
+      - name: Build and run full tests + generate reports
+        working-directory: TourGuide
+        run: mvn clean verify jacoco:report surefire-report:report-only javadoc:javadoc -Dtest='!*Performance*'
+
+      - name: Upload JaCoCo Report
+        uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: TourGuide/target/site/jacoco/
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v4
         with:
           name: javadoc
           path: TourGuide/target/site/apidocs/
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Surefire Report
+        uses: actions/upload-artifact@v4
         with:
           name: surefire-report
           path: TourGuide/target/site/
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Application JAR
+        uses: actions/upload-artifact@v4
         with:
           name: application-jar
           path: TourGuide/target/*.jar
-      - uses: peaceiris/actions-gh-pages@v3
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: TourGuide/target
+          publish_dir: TourGuide/target/site
 
   docker-build:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: test-and-report
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v3
+
+      - name: Cache Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.setup-libs.outputs.maven-cache-key }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "temurin"
-      - run: |
-          cd TourGuide
-          mvn install:install-file -Dfile=./libs/gpsUtil.jar -DgroupId=gpsUtil -DartifactId=gpsUtil -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/RewardCentral.jar -DgroupId=rewardCentral -DartifactId=rewardCentral -Dversion=1.0.0 -Dpackaging=jar
-          mvn install:install-file -Dfile=./libs/TripPricer.jar -DgroupId=tripPricer -DartifactId=tripPricer -Dversion=1.0.0 -Dpackaging=jar
-          mvn clean install
+
+      - name: Build application with Maven
+        working-directory: TourGuide
+        run: mvn clean install -DskipTests
+
       - id: vars
         run: echo "short_sha=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
-      - run: |
+
+      - name: Build Docker image with tags
+        run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/p8:latest -t ${{ secrets.DOCKER_USERNAME }}/p8:${{ env.short_sha }} .
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push Docker image
+        run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/p8:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/p8:${{ env.short_sha }}
