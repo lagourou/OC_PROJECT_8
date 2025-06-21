@@ -10,22 +10,14 @@ jobs:
   setup-libs:
     name: Setup Private JAR Dependencies
     runs-on: ubuntu-latest
-    outputs:
-      maven-cache-key: ${{ steps.set-cache-key.outputs.key }}
     steps:
       - uses: actions/checkout@v2
 
-      - id: set-cache-key
-        run: |
-          echo "key=${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}" >> $GITHUB_OUTPUT
-          echo "cache-hit=false" >> $GITHUB_OUTPUT
-
       - name: Cache Maven repository
-        id: cache-maven
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ steps.set-cache-key.outputs.key }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -101,7 +93,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.setup-libs.outputs.maven-cache-key }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -164,7 +158,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ needs.setup-libs.outputs.maven-cache-key }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
