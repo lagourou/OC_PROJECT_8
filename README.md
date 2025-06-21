@@ -46,9 +46,9 @@ It allows you to track users, recommend the 5 nearest attractions (regardless of
 
 The project documentation is hosted on GitHub Pages:
 
-- [**JaCoCo Report**](https://lagourou.github.io/OC_PROJECT_8/site/jacoco/index.html) — test coverage
-- [**JavaDoc**](https://lagourou.github.io/OC_PROJECT_8/site/apidocs/index.html) — generated Java code documentation
-- [**Surefire Report**](https://lagourou.github.io/OC_PROJECT_8/site/surefire-report.html) — test execution results
+- [**JaCoCo Report**](https://lagourou.github.io/OC_PROJECT_8/jacoco/index.html) — test coverage
+- [**JavaDoc**](https://lagourou.github.io/OC_PROJECT_8/apidocs/index.html) — generated Java code documentation
+- [**Surefire Report**](https://lagourou.github.io/OC_PROJECT_8/surefire-report.html) — test execution results
 
 ## Project Architecture
 
