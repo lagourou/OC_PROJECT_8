@@ -60,3 +60,47 @@
 2025-06-20 17:33:59 [main] INFO  c.o.t.TourguideApplicationTests - No active profile set, falling back to 1 default profile: "default"
 2025-06-20 17:34:09 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
 2025-06-20 17:34:10 [main] INFO  c.o.t.TourguideApplicationTests - Started TourguideApplicationTests in 11.993 seconds (process running for 1056.79)
+2025-06-21 20:40:01 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Initializing ExecutorService
+2025-06-21 20:40:02 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Tracking 100 users...
+2025-06-21 20:40:02 [main] INFO  c.o.t.p.TestTrackLocationPerformance - ===== FINAL RESULT =====
+2025-06-21 20:40:02 [main] INFO  c.o.t.p.TestTrackLocationPerformance - highVolumeTrackLocation: Time Elapsed: 0 seconds.
+2025-06-21 20:41:55 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Initializing ExecutorService
+2025-06-21 20:41:56 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Tracking 1000 users...
+2025-06-21 20:41:58 [main] INFO  c.o.t.p.TestTrackLocationPerformance - ===== FINAL RESULT =====
+2025-06-21 20:41:58 [main] INFO  c.o.t.p.TestTrackLocationPerformance - highVolumeTrackLocation: Time Elapsed: 2 seconds.
+2025-06-21 20:43:23 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Initializing ExecutorService
+2025-06-21 20:43:25 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Tracking 5000 users...
+2025-06-21 20:43:34 [main] INFO  c.o.t.p.TestTrackLocationPerformance - ===== FINAL RESULT =====
+2025-06-21 20:43:34 [main] INFO  c.o.t.p.TestTrackLocationPerformance - highVolumeTrackLocation: Time Elapsed: 9 seconds.
+2025-06-21 20:43:35 [pool-2-thread-259] INFO  c.o.tourguide.service.RewardsService - User: internalUser571, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 20:45:00 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Initializing ExecutorService
+2025-06-21 20:45:02 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Tracking 10000 users...
+2025-06-21 20:45:21 [main] INFO  c.o.t.p.TestTrackLocationPerformance - ===== FINAL RESULT =====
+2025-06-21 20:45:21 [main] INFO  c.o.t.p.TestTrackLocationPerformance - highVolumeTrackLocation: Time Elapsed: 19 seconds.
+2025-06-21 20:45:25 [pool-2-thread-211] INFO  c.o.tourguide.service.RewardsService - User: internalUser8984, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 20:58:35 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Initializing ExecutorService
+2025-06-21 20:58:38 [main] INFO  c.o.t.p.TestTrackLocationPerformance - Tracking 50000 users...
+2025-06-21 20:59:01 [pool-2-thread-28] INFO  c.o.tourguide.service.RewardsService - User: internalUser38773, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 20:59:20 [pool-2-thread-83] INFO  c.o.tourguide.service.RewardsService - User: internalUser4007, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 20:59:21 [pool-2-thread-126] INFO  c.o.tourguide.service.RewardsService - User: internalUser40737, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 20:59:41 [pool-2-thread-46] INFO  c.o.tourguide.service.RewardsService - User: internalUser39555, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:00:03 [pool-2-thread-270] INFO  c.o.tourguide.service.RewardsService - User: internalUser47090, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:00:24 [main] INFO  c.o.t.p.TestTrackLocationPerformance - ===== FINAL RESULT =====
+2025-06-21 21:00:24 [main] INFO  c.o.t.p.TestTrackLocationPerformance - highVolumeTrackLocation: Time Elapsed: 105 seconds.
+2025-06-21 21:05:31 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Initializing ExecutorService
+2025-06-21 21:05:32 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Tracking 100 users...
+2025-06-21 21:05:36 [main] INFO  c.o.t.p.TestGetRewardsPerformance - ===== FINAL RESULT =====
+2025-06-21 21:05:36 [main] INFO  c.o.t.p.TestGetRewardsPerformance - highVolumeGetRewards: Time Elapsed: 4 seconds.
+2025-06-21 21:07:18 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Initializing ExecutorService
+2025-06-21 21:07:19 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Tracking 1000 users...
+2025-06-21 21:07:42 [main] INFO  c.o.t.p.TestGetRewardsPerformance - ===== FINAL RESULT =====
+2025-06-21 21:07:42 [main] INFO  c.o.t.p.TestGetRewardsPerformance - highVolumeGetRewards: Time Elapsed: 22 seconds.
+2025-06-21 21:08:42 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Initializing ExecutorService
+2025-06-21 21:08:43 [main] INFO  c.o.t.p.TestGetRewardsPerformance - Tracking 10000 users...
+2025-06-21 21:08:59 [pool-2-thread-31] INFO  c.o.tourguide.service.RewardsService - User: internalUser125, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:09:08 [pool-2-thread-108] INFO  c.o.tourguide.service.RewardsService - User: internalUser1726, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:09:24 [pool-2-thread-205] INFO  c.o.tourguide.service.RewardsService - User: internalUser277, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:09:27 [pool-2-thread-201] INFO  c.o.tourguide.service.RewardsService - User: internalUser245, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:10:05 [pool-2-thread-230] INFO  c.o.tourguide.service.RewardsService - User: internalUser7567, visitedLocations: 4, attractionsToCheck: 26
+2025-06-21 21:10:28 [main] INFO  c.o.t.p.TestGetRewardsPerformance - ===== FINAL RESULT =====
+2025-06-21 21:10:28 [main] INFO  c.o.t.p.TestGetRewardsPerformance - highVolumeGetRewards: Time Elapsed: 104 seconds.
