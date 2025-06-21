@@ -215,7 +215,6 @@ Run the tests with:
 mvn test
 ```
 
-```markdown
 Performance tests :
 
     -TestGetRewardsPerformance
@@ -225,7 +224,6 @@ must respect this objective :
 
       - `highVolumeTrackLocation` → **100 000 users in less than 15 minutes**
       - `highVolumeGetRewards` → **100 000 users in less than 20 minutes**
-```
 
 ### Jacoco
 
